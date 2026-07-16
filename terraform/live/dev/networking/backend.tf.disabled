@@ -1,3 +1,6 @@
+# Backend configuration is intentionally disabled.
+# Update the bucket, key, and DynamoDB table according to the target AWS account before running `terraform init -reconfigure`.
+
 /*
 terraform {
   backend "s3" {

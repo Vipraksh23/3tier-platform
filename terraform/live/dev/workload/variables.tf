@@ -85,3 +85,31 @@ variable "cluster_version" {
   default = "1.31"
 
 }
+
+variable "db_name" {
+
+  type        = string
+  description = "Database name"
+
+  default = "appdb"
+
+}
+
+variable "db_username" {
+
+  type        = string
+  description = "Database admin username"
+
+  default = "postgres"
+
+}
+
+variable "github_repository" {
+
+  description = "GitHub repository"
+
+  type = string
+
+  default = "Vipraksh23/3tier-platform"
+
+}

@@ -28,6 +28,20 @@ module "iam" {
 
 }
 
+module "github_oidc" {
+
+  source = "../../../modules/github_oidc"
+
+  project_name = var.project_name
+
+  environment = var.environment
+
+  aws_region = var.aws_region
+
+  github_repository = "Vipraksh23/3tier-platform"
+
+}
+
 module "ecr" {
 
   source = "../../../modules/ecr"
@@ -38,18 +52,52 @@ module "ecr" {
 
 }
 
-module "rds" {
+module "secretsmanager" {
 
-  source = "../../../modules/rds"
+  source = "../../../modules/secretsmanager"
 
   project_name = var.project_name
 
   environment = var.environment
 
-  vpc_id = module.networking.vpc_id
+  db_name = var.db_name
 
+  db_username = var.db_username
+
+}
+
+module "rds" {
+
+  source = "../../../modules/rds"
+
+  project_name = var.project_name
+  environment  = var.environment
+
+  vpc_id             = module.networking.vpc_id
   private_subnet_ids = module.networking.private_subnet_ids
 
-  db_password = "ChangeMe@123"
+  db_name     = var.db_name
+  db_username = var.db_username
+  db_password = module.secretsmanager.db_password
+
+}
+
+module "irsa" {
+
+  source = "../../../modules/irsa"
+
+  project_name = var.project_name
+
+  environment = var.environment
+
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  oidc_provider_url = module.eks.cluster_oidc_issuer_url
+
+  namespace = "backend"
+
+  service_account_name = "backend-sa"
+
+  secret_arn = module.secretsmanager.secret_arn
 
 }

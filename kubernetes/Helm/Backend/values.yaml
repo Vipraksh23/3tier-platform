@@ -1,0 +1,44 @@
+replicaCount: 2
+
+image:
+  repository: <aws-account-id>.dkr.ecr.ap-south-1.amazonaws.com/backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+serviceAccount:
+  create: true
+  name: backend-sa
+
+irsa:
+  roleArn: ""
+
+secretProvider:
+  name: aws-secrets
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+
+  limits:
+    cpu: "1000m"
+    memory: "1Gi"
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+env:
+  dbHost: postgres
+  dbName: appdb
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

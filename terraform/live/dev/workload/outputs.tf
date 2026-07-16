@@ -27,3 +27,9 @@ output "rds_port" {
   value = module.rds.db_port
 
 }
+
+output "cluster_oidc_issuer_url" {
+
+  value = module.eks.cluster_oidc_issuer_url
+
+}
