@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+
+metadata:
+  name: 3tier-platform
+
+  namespace: argocd
+
+spec:
+
+  description: 3-Tier Platform GitOps Project
+
+  sourceRepos:
+    - '*'
+
+  destinations:
+    - namespace: default
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'

@@ -1,0 +1,47 @@
+# In production this workflow would:
+# 1. Push Docker image to Amazon ECR
+# 2. Update Helm values.yaml with new image tag
+# 3. Commit updated Helm chart
+# 4. ArgoCD detects Git change and performs rolling deployment
+
+name: GitOps Deployment (Demo)
+
+on:
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+env:
+
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Authenticate using GitHub OIDC
+      # Uncomment after Terraform creates IAM Role
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Display Image Tag
+        run: echo "Deploying image ${{ github.sha }}"
+
+      # Update Helm values.yaml
+      # Commit updated image tag
+      # Push commit
+      # ArgoCD will automatically sync

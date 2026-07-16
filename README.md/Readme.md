@@ -113,28 +113,24 @@ The infrastructure is fully automated using Terraform, applications are packaged
 # 📂 Repository Structure
 
 ```
-terraform/
-│
-├── live/
-│   └── dev/
-│       ├── networking/
-│       ├── security/
-│       ├── shared/
-│       └── workload/
-│
-└── modules/
-    ├── vpc/
-    ├── iam/
-    ├── ecr/
-    ├── rds/
-    ├── github_oidc/
-    ├── irsa/
-    └── secretsmanager/
+.
+├── .github/
+│   └── workflows/
+├── argocd/
+├── docker/
+│   ├── backend/
+│   └── frontend/
+├── docs/
+├── kubernetes/
+│   ├── addons/
+│   ├── Helm/
+│   ├── monitoring/
+│   └── security/
+├── terraform/
+│   ├── live/
+│   └── modules/
+└── README.md
 
-kubernetes/
-└── Helm/
-    ├── frontend/
-    └── backend/
 ```
 
 ---
@@ -252,21 +248,24 @@ Application Available
 
 # 📈 CI/CD
 
-GitHub Actions performs:
+GitHub Actions currently performs:
 
+- Terraform Format Check
 - Terraform Validation
-- Docker Build
-- Docker Push to Amazon ECR
-- Helm Chart Update
-- ArgoCD Deployment
+- Docker Image Build
+
+Production-ready workflow (documented):
+
+- Push Docker Images to Amazon ECR
+- Update Helm values.yaml
+- Trigger GitOps deployment through ArgoCD
 
 ---
 
-# 📊 Monitoring (Planned)
+# 📊 Monitoring
 
 - Prometheus
 - Grafana
-- Alertmanager
 
 ---
 

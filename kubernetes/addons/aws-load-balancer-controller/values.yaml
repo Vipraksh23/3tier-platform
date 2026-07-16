@@ -1,0 +1,11 @@
+clusterName: PLACEHOLDER_CLUSTER_NAME
+
+serviceAccount:
+
+  create: false
+
+  name: aws-load-balancer-controller
+
+region: ap-south-1
+
+vpcId: PLACEHOLDER_VPC_ID
