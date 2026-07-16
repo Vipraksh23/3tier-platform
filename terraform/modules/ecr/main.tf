@@ -42,13 +42,11 @@ resource "aws_ecr_lifecycle_policy" "repositories" {
 
         selection = {
 
-          tagStatus = "tagged"
-
-          tagPrefixList = ["v"]
+          tagStatus = "any"
 
           countType = "imageCountMoreThan"
 
-          countNumber = 10
+          countNumber = 20
 
         }
 

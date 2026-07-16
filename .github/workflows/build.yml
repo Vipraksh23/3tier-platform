@@ -1,0 +1,93 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+    paths:
+      - "frontend/**"
+      - "backend/**"
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # GitHub Secret
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+
+  docker:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout source code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Authenticate to AWS using GitHub OIDC
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Login to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build Images
+
+      - name: Build Backend Image
+        run: |
+          docker build \
+            -t backend:${{ github.sha }} \
+            ./backend
+
+      - name: Build Frontend Image
+        run: |
+          docker build \
+            -t frontend:${{ github.sha }} \
+            ./frontend
+
+      # Tag Images
+
+      # Replace repository names after terraform apply.
+      # Example:
+      # 3tier-platform-dev-backend
+      # 3tier-platform-dev-frontend
+
+      - name: Tag Backend Image
+        run: |
+          docker tag backend:${{ github.sha }} \
+          ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
+
+      - name: Tag Frontend Image
+        run: |
+          docker tag frontend:${{ github.sha }} \
+          ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}
+
+      # Push Images
+
+      # These steps will work only after:
+      # 1. terraform apply
+      # 2. ECR repositories exist
+      # 3. GitHub OIDC IAM Role exists
+
+      - name: Push Backend Image
+        run: |
+          docker push \
+          ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
+
+      - name: Push Frontend Image
+        run: |
+          docker push \
+          ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}

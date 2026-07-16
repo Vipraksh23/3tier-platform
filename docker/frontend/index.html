@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>3-Tier Platform</title>
+</head>
+
+<body>
+
+<h1>🚀 3-Tier Platform</h1>
+
+<h2>Frontend running successfully!</h2>
+
+<button onclick="checkBackend()">Call Backend API</button>
+
+<p id="result"></p>
+
+<script>
+
+async function checkBackend(){
+
+const response = await fetch("/api/health");
+
+const data = await response.text();
+
+document.getElementById("result").innerHTML=data;
+
+}
+
+</script>
+
+</body>
+
+</html>
