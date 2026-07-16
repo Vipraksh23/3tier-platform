@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Docker Build CI
 
 on:
   push:
@@ -8,6 +8,7 @@ on:
     paths:
       - "docker/frontend/**"
       - "docker/backend/**"
+      - ".github/workflows/build.yml"
 
   workflow_dispatch:
 
@@ -32,17 +33,18 @@ jobs:
         uses: actions/checkout@v4
 
       # Authenticate to AWS using GitHub OIDC
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
 
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ secrets.AWS_REGION }}
+    #   - name: Configure AWS Credentials
+    #     uses: aws-actions/configure-aws-credentials@v4
 
-      # Login to Amazon ECR
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+    #     with:
+    #       role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+    #       aws-region: ${{ secrets.AWS_REGION }}
+
+      # Login to Amazon ECR (uncomment once repo created via infra pipeline)
+    #   - name: Login to Amazon ECR
+    #     id: login-ecr
+    #     uses: aws-actions/amazon-ecr-login@v2
 
       # Build Images
 
@@ -50,13 +52,13 @@ jobs:
         run: |
           docker build \
             -t backend:${{ github.sha }} \
-            ./backend
+            ./docker/backend
 
       - name: Build Frontend Image
         run: |
           docker build \
             -t frontend:${{ github.sha }} \
-            ./frontend
+            ./docker/frontend
 
       # Tag Images
 
@@ -65,15 +67,15 @@ jobs:
       # 3tier-platform-dev-backend
       # 3tier-platform-dev-frontend
 
-      - name: Tag Backend Image
-        run: |
-          docker tag backend:${{ github.sha }} \
-          ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
+    #   - name: Tag Backend Image
+    #     run: |
+    #       docker tag backend:${{ github.sha }} \
+    #       ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
 
-      - name: Tag Frontend Image
-        run: |
-          docker tag frontend:${{ github.sha }} \
-          ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}
+    #   - name: Tag Frontend Image
+    #     run: |
+    #       docker tag frontend:${{ github.sha }} \
+    #       ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}
 
       # Push Images
 
@@ -82,12 +84,12 @@ jobs:
       # 2. ECR repositories exist
       # 3. GitHub OIDC IAM Role exists
 
-      - name: Push Backend Image
-        run: |
-          docker push \
-          ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
+    #   - name: Push Backend Image
+    #     run: |
+    #       docker push \
+    #       ${{ steps.login-ecr.outputs.registry }}/YOUR_BACKEND_REPOSITORY:${{ github.sha }}
 
-      - name: Push Frontend Image
-        run: |
-          docker push \
-          ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}
+    #   - name: Push Frontend Image
+    #     run: |
+    #       docker push \
+    #       ${{ steps.login-ecr.outputs.registry }}/YOUR_FRONTEND_REPOSITORY:${{ github.sha }}
